@@ -10,16 +10,19 @@ from .serializers import KittiesSerializer
 
 class KittiesAPIView(APIView):
     def get(self, request):
-        lst = Kitties.objects.all().values()
-        return Response({'posts': list(lst)})
+        lst = Kitties.objects.all()
+        return Response({'posts': KittiesSerializer(lst, many=True).data})       # many=True because of list
 
     def post(self, request):
+        serializer = KittiesSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True) # to get exception as JSON string
+
         new_post = Kitties.objects.create(
             title=request.data['title'],
             content=request.data['content'],
             cat_id=request.data['cat_id']
         )
-        return Response({'post': model_to_dict(new_post)})
+        return Response({'post': KittiesSerializer(new_post).data})
 
 
 # class KittiesAPIView(generics.ListAPIView):
