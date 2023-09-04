@@ -21,5 +21,6 @@ from kitties.views import KittiesAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/kittieslist/', KittiesAPIView.as_view())
+    path('api/v1/kittieslist/', KittiesAPIView.as_view()),
+    path('api/v1/kittieslist/<int:pk>/', KittiesAPIView.as_view())
 ]
