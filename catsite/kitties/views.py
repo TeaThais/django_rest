@@ -1,74 +1,44 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Kitties
+from .models import Kitties, Category
 from .serializers import KittiesSerializer
 
 
-class KittiesAPIList(generics.ListCreateAPIView):
-    queryset = Kitties.objects.all()
+class KittiesViewSet(viewsets.ModelViewSet):
+   # queryset = Kitties.objects.all()
     serializer_class = KittiesSerializer
 
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        if not pk:
+            return Kitties.objects.all()[:3]
+        
+        return Kitties.objects.filter(pk=pk)
 
-class KittiesAPIUpdate(generics.UpdateAPIView):
-    queryset = Kitties.objects.all()            # lazy request here returns only one changed object
-    serializer_class = KittiesSerializer
-
-
-class KittiesDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Kitties.objects.all()
-    serializer_class = KittiesSerializer
-
-# class KittiesAPIView(APIView):
-#     def get(self, request):
-#         lst = Kitties.objects.all()
-#         return Response({'posts': KittiesSerializer(lst, many=True).data})       # many=True because of list
-#
-#     def post(self, request):
-#         serializer = KittiesSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True) # to get exception as JSON string
-#         serializer.save()   # method save() calls method CREATE() and adds object
-#
-#         # new_post = Kitties.objects.create(
-#         #     title=request.data['title'],
-#         #     content=request.data['content'],
-#         #     cat_id=request.data['cat_id']
-#         # )
-#         return Response({'post': serializer.data})
-#
-#     def put(self, request, *args, **kwargs):
-#         pk = kwargs.get('pk', None)    # if pk is absent returns None
-#         if not pk:
-#             return Response({'error': 'Method PUT is not allowed'})
-#         # if there is no pk in the url we don't know what to change
-#
-#         try:
-#             instance = Kitties.objects.get(pk=pk)
-#         except:
-#             return Response({'error': 'Object does not exist'})    # in case of pk that is not in the table
-#
-#         serializer = KittiesSerializer(data=request.data, instance=instance)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()                           # save() calls method UPDATE as we have instance parameter
-#         return Response({'post': serializer.data})
-#
-#     def delete(self, request, *args, **kwargs):
-#         pk = kwargs.get('pk', None)
-#         if not pk:
-#             return Response({'error': 'Method DELETE is not allowed'})
-#
-#         try:
-#             instance = Kitties.objects.get(pk=pk)
-#             instance.delete()
-#         except:
-#             return Response({'error': 'Object does not exist'})
-#
-#         return Response({'post': 'delete post ' + str(pk)})
+    @action(methods=['get'], detail=False)
+    def category(self, request):
+        cats = Category.objects.all()
+        return Response({'cats': [c.name for c in cats]})
 
 
-# class KittiesAPIView(generics.ListAPIView):
+
+# class KittiesAPIList(generics.ListCreateAPIView):
 #     queryset = Kitties.objects.all()
 #     serializer_class = KittiesSerializer
+#
+#
+# class KittiesAPIUpdate(generics.UpdateAPIView):
+#     queryset = Kitties.objects.all()            # lazy request here returns only one changed object
+#     serializer_class = KittiesSerializer
+#
+#
+# class KittiesDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Kitties.objects.all()
+#     serializer_class = KittiesSerializer
+
+
