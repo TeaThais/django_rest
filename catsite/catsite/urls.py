@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from kitties.views import KittiesAPIView
+from kitties.views import KittiesAPIList, KittiesAPIUpdate, KittiesDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/kittieslist/', KittiesAPIView.as_view()),
-    path('api/v1/kittieslist/<int:pk>/', KittiesAPIView.as_view())
+    path('api/v1/kittieslist/', KittiesAPIList.as_view()),
+    path('api/v1/kittieslist/<int:pk>/', KittiesAPIUpdate.as_view()),
+    path('api/v1/kittiesdetail/<int:pk>/', KittiesDetailView.as_view())
 ]

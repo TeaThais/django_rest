@@ -8,51 +8,65 @@ from .models import Kitties
 from .serializers import KittiesSerializer
 
 
-class KittiesAPIView(APIView):
-    def get(self, request):
-        lst = Kitties.objects.all()
-        return Response({'posts': KittiesSerializer(lst, many=True).data})       # many=True because of list
+class KittiesAPIList(generics.ListCreateAPIView):
+    queryset = Kitties.objects.all()
+    serializer_class = KittiesSerializer
 
-    def post(self, request):
-        serializer = KittiesSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True) # to get exception as JSON string
-        serializer.save()   # method save() calls method CREATE() and adds object
 
-        # new_post = Kitties.objects.create(
-        #     title=request.data['title'],
-        #     content=request.data['content'],
-        #     cat_id=request.data['cat_id']
-        # )
-        return Response({'post': serializer.data})
+class KittiesAPIUpdate(generics.UpdateAPIView):
+    queryset = Kitties.objects.all()            # lazy request here returns only one changed object
+    serializer_class = KittiesSerializer
 
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get('pk', None)    # if pk is absent returns None
-        if not pk:
-            return Response({'error': 'Method PUT is not allowed'})
-        # if there is no pk in the url we don't know what to change
 
-        try:
-            instance = Kitties.objects.get(pk=pk)
-        except:
-            return Response({'error': 'Object does not exist'})    # in case of pk that is not in the table
+class KittiesDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Kitties.objects.all()
+    serializer_class = KittiesSerializer
 
-        serializer = KittiesSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()                           # save() calls method UPDATE as we have instance parameter
-        return Response({'post': serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk', None)
-        if not pk:
-            return Response({'error': 'Method DELETE is not allowed'})
-
-        try:
-            instance = Kitties.objects.get(pk=pk)
-            instance.delete()
-        except:
-            return Response({'error': 'Object does not exist'})
-              
-        return Response({'post': 'delete post ' + str(pk)})
+# class KittiesAPIView(APIView):
+#     def get(self, request):
+#         lst = Kitties.objects.all()
+#         return Response({'posts': KittiesSerializer(lst, many=True).data})       # many=True because of list
+#
+#     def post(self, request):
+#         serializer = KittiesSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True) # to get exception as JSON string
+#         serializer.save()   # method save() calls method CREATE() and adds object
+#
+#         # new_post = Kitties.objects.create(
+#         #     title=request.data['title'],
+#         #     content=request.data['content'],
+#         #     cat_id=request.data['cat_id']
+#         # )
+#         return Response({'post': serializer.data})
+#
+#     def put(self, request, *args, **kwargs):
+#         pk = kwargs.get('pk', None)    # if pk is absent returns None
+#         if not pk:
+#             return Response({'error': 'Method PUT is not allowed'})
+#         # if there is no pk in the url we don't know what to change
+#
+#         try:
+#             instance = Kitties.objects.get(pk=pk)
+#         except:
+#             return Response({'error': 'Object does not exist'})    # in case of pk that is not in the table
+#
+#         serializer = KittiesSerializer(data=request.data, instance=instance)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()                           # save() calls method UPDATE as we have instance parameter
+#         return Response({'post': serializer.data})
+#
+#     def delete(self, request, *args, **kwargs):
+#         pk = kwargs.get('pk', None)
+#         if not pk:
+#             return Response({'error': 'Method DELETE is not allowed'})
+#
+#         try:
+#             instance = Kitties.objects.get(pk=pk)
+#             instance.delete()
+#         except:
+#             return Response({'error': 'Object does not exist'})
+#
+#         return Response({'post': 'delete post ' + str(pk)})
 
 
 # class KittiesAPIView(generics.ListAPIView):
