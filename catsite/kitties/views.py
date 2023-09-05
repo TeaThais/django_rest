@@ -51,10 +51,7 @@ class KittiesAPIView(APIView):
             instance.delete()
         except:
             return Response({'error': 'Object does not exist'})
-
-        serializer = KittiesSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()                           # save() calls method UPDATE as we have instance parameter
+              
         return Response({'post': 'delete post ' + str(pk)})
 
 
