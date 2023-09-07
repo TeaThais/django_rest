@@ -7,13 +7,9 @@ from rest_framework.renderers import JSONRenderer
 from .models import Kitties
 
 
-# class KittiesModel:
-#     def __init__(self, title, content):
-#         self.title = title
-#         self.content = content
-
-
 class KittiesSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())    # to add posts as logged user
+
     class Meta:
         model = Kitties
         fields = '__all__'
