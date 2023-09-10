@@ -2,7 +2,7 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -37,7 +37,7 @@ class KittiesAPIList(generics.ListCreateAPIView):
 class KittiesAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Kitties.objects.all()            # lazy request here returns only one changed object
     serializer_class = KittiesSerializer
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
 
 
 class KittiesAPIDestroy(generics.RetrieveDestroyAPIView):
