@@ -2,6 +2,7 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -28,10 +29,17 @@ from .serializers import KittiesSerializer
 #         return Response({'cats': [c.name for c in cats]})
 
 
+class KittiesAPIListPagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'page_size'
+    max_page_size = 5       # max value for 'page_size' in queries like '&page_size=4'
+
+
 class KittiesAPIList(generics.ListCreateAPIView):
     queryset = Kitties.objects.all()
     serializer_class = KittiesSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = KittiesAPIListPagination
 
 
 class KittiesAPIUpdate(generics.RetrieveUpdateAPIView):
